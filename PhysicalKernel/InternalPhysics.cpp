@@ -205,7 +205,7 @@ void InternalPhysics::TestCollision( list<Object*>::iterator *theObject, int aNu
 			if( typeA==SPHERE && typeB==PLANE)
 			{
 				// We test if there is and intersection
-				if ( TestPlanSphereCollision((Sphere*)(**theObject),(Plane*)(*anObject)) )
+				if ( TestPlaneSphereCollision((Sphere*)(**theObject),(Plane*)(*anObject)) )
 				{
 					// Yes there is
 					AddIntersection( (**theObject),(Plane*)(*anObject) );
@@ -214,7 +214,12 @@ void InternalPhysics::TestCollision( list<Object*>::iterator *theObject, int aNu
 
 			if( typeA==CUBE && typeB==PLANE)
 			{
-
+				// We test if there is and intersection
+				if ( TestPlaneCubeCollision((Cube*)(**theObject),(Plane*)(*anObject)) )
+				{
+					// Yes there is
+					AddIntersection( (**theObject),(Plane*)(*anObject) );
+				}
 			}
 
 			if( typeA==CUBE && typeB==SPHERE)
@@ -241,7 +246,12 @@ bool InternalPhysics::TestSphereSphereCollision(Sphere * aA,Sphere * aB)
 
 }
 
-bool InternalPhysics::TestPlanSphereCollision(Sphere *aA, Plane *aB)
+bool InternalPhysics::TestPlaneCubeCollision(Cube * aA,Plane * aB)
+{
+	return false;
+}
+
+bool InternalPhysics::TestPlaneSphereCollision(Sphere *aA, Plane *aB)
 {
 	// Computing the normal distance from the sphere center to the plane
 	Vector3 vector1 = aA->GetNewPosition() - aB->GetPosition();
@@ -413,6 +423,10 @@ void InternalPhysics::ManageSphereSphereCollision(Sphere* A, Sphere* B)
 }
 
 
+void InternalPhysics::ManagePlaneCubeCollision(Cube* A, Plane* B)
+{
+
+}
 
 void InternalPhysics::Update()
 {
@@ -455,7 +469,7 @@ void InternalPhysics::Update()
 		// Managing the sphere/plane collision
 		if( typeA == SPHERE	&&	typeB == PLANE)
 		{
-			ManageSpherePlanCollision( (Sphere*) A, (Plane *) B);
+			ManageSpherePlaneCollision( (Sphere*) A, (Plane *) B);
 		}
 
 		// Moving to the next one
@@ -495,7 +509,7 @@ void InternalPhysics::Update()
 }
 
 
-void InternalPhysics::ManageSpherePlanCollision(Sphere* aSphere, Plane * aPlan)
+void InternalPhysics::ManageSpherePlaneCollision(Sphere* aSphere, Plane * aPlan)
 {
 
 	//local variable declaring

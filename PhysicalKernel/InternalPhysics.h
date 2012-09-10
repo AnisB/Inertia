@@ -29,7 +29,7 @@
 #include <list>
 #include "../Primitives/Sphere.h"
 #include "../Primitives/Plane.h"
-
+#include "../Primitives/Cube.h"
 
 namespace Inertia
 {
@@ -87,15 +87,26 @@ class InternalPhysics
 
 	protected:
 
-		void ApplyForces(double aStep);
+
+	// Collision test
 		void TestCollision( std::list<Object*>::iterator *theObject, int aNumeroObjet );
 		bool TestSphereSphereCollision(Sphere * A,Sphere * B);
-		bool TestPlanSphereCollision(Sphere *A, Plane  *B);
-		bool IsInsidePlan( Object* A, Plane* _pPlan, float _fDist );
+		bool TestPlaneSphereCollision(Sphere *A, Plane  *B);
+		bool TestPlaneCubeCollision(Cube *A, Plane  *B);
+
+	// Collision manage
+		void ManageSphereSphereCollision(Sphere* A, Sphere* B);
+		void ManageSpherePlaneCollision(Sphere* A, Plane * B);
+		void ManagePlaneCubeCollision(Cube* A, Plane * B);
+
+		void ApplyForces(double aStep);
+
+
+		bool IsInsidePlan( Object* A, Plane* aPlan, float aDist );
 		void AddIntersection(Object* A, Object*B, Vector3 theNormal, Vector3 theContactPoint);
 		void AddIntersection(Object* A, Object*B);
-		void ManageSphereSphereCollision(Sphere* A, Sphere* B);
-		void ManageSpherePlanCollision(Sphere* A, Plane * B);
+
+
 		void Update();
 
 	protected:

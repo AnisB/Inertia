@@ -22,57 +22,32 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
-#ifndef RENDERER_H_
-#define RENDERER_H_
+#ifndef OGRECUBE_H_
+#define OGRECUBE_H_
 
 
 #include "OGRE/Ogre.h"
-#include "InputListener.h"
-#include "../PhysicalKernel/InternalPhysics.h"
-#include "OgreObjects/OgreSphere.h"
-#include "OgreObjects/OgrePlane.h"
-#include "OgreObjects/OgreCube.h"
+#include "../../PhysicalKernel/InternalPhysics.h"
+#include "OgreObject.h"
 
 
-class InputListener;
-class Renderer
+
+class OgreCube : public OgreObject
 {
-	protected:
-	Ogre::Root* 			mRoot;
-	Ogre::RenderWindow* 	mWindow;
-	Ogre::SceneManager* 	mSceneMgr;
-
-	InputListener * mInputManager;
-
-	Ogre::Camera  * mCamera;
-	Inertia::InternalPhysics * mPhysicsWorld;
-	OgreSphere * mSphere;
-	std::list<OgreObject *> ObjectList;
-	 Ogre::LogManager * myLogManager  ;
+public:
+	OgreCube(Inertia::InternalPhysics * aPhysicalWorld ,Ogre::SceneManager * aSceneMgr, Ogre::Vector3 & p1);
+	virtual ~OgreCube();
+	virtual void SetGravity( );
+	void AddNewConstantForce(Ogre::Vector3 aForce);
+	void AddNewImpultionalForce(Ogre::Vector3 aForce);
+	virtual void Update();
 
 
-
-	public:
-		Renderer();
-		virtual ~Renderer();
-		void Start();
-		void InitMaterials();
-		bool InitConfigs();
-		void Scene1();
-		void Scene2();
-		void Scene3();
-		void Scene4();
-		void CreateFrameListener();
-		Ogre::SceneManager * getSceneManager()
-		{
-			return mSceneMgr;
-		}
-		void Update(double dt);
-		void  Step();
+protected :
+	Ogre::Entity* mObject;
+	Inertia::Cube * mPhysicsCube;
+	Ogre::SceneManager * mSceneMgr;
 
 };
 
-#endif /* RENDERER_H_ */
-
-
+#endif /* OGRECUBE_H_ */

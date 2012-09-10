@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../Primitives/Cube.cpp \
 ../Primitives/Object.cpp \
 ../Primitives/Plane.cpp \
 ../Primitives/Sphere.cpp 
 
 OBJS += \
+./Primitives/Cube.o \
 ./Primitives/Object.o \
 ./Primitives/Plane.o \
 ./Primitives/Sphere.o 
 
 CPP_DEPS += \
+./Primitives/Cube.d \
 ./Primitives/Object.d \
 ./Primitives/Plane.d \
 ./Primitives/Sphere.d 

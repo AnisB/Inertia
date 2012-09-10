@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../OgreRendering/OgreObjects/OgreCube.cpp \
 ../OgreRendering/OgreObjects/OgreObject.cpp \
 ../OgreRendering/OgreObjects/OgrePlane.cpp \
 ../OgreRendering/OgreObjects/OgreSphere.cpp 
 
 OBJS += \
+./OgreRendering/OgreObjects/OgreCube.o \
 ./OgreRendering/OgreObjects/OgreObject.o \
 ./OgreRendering/OgreObjects/OgrePlane.o \
 ./OgreRendering/OgreObjects/OgreSphere.o 
 
 CPP_DEPS += \
+./OgreRendering/OgreObjects/OgreCube.d \
 ./OgreRendering/OgreObjects/OgreObject.d \
 ./OgreRendering/OgreObjects/OgrePlane.d \
 ./OgreRendering/OgreObjects/OgreSphere.d 

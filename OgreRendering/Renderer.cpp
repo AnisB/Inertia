@@ -66,7 +66,7 @@ void Renderer::Start()
 
 
 		//CREATION DE LA SCENE
-		Scene3();
+		Scene4();
 
 		//Creation de l'input listener
 		CreateFrameListener();
@@ -325,6 +325,69 @@ void Renderer::Scene3()
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Renderer::Scene4()
+{
+	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+
+		mSceneMgr->setAmbientLight(Ogre::ColourValue(0.4, 0.4, 0.4));
+
+
+		 Ogre::Light * light = mSceneMgr->createLight("Light");
+		 light->setType(Ogre::Light::LT_POINT);
+		 light->setDirection(Ogre::Vector3(1, -1, 0));
+		 light->setDiffuseColour(0.8, 0.8, 0.8);
+		 light->setSpecularColour(0.8, 0.5, 0.8);
+		 light->setPosition(100, 250, 100);
+
+		//Camera
+		mCamera = mSceneMgr->createCamera("PlayerCamera");
+
+
+		//Screens
+		Ogre::Viewport* vp = mWindow->addViewport(mCamera);
+		vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
+
+		// Parametrage du point de vue
+		mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+
+
+
+
+		Ogre::Vector3 p1(-100.0f,100.0f,100.0f);
+		OgreCube * aCube = new OgreCube(mPhysicsWorld ,mSceneMgr,p1);
+		aCube->SetGravity();
+		ObjectList.push_back(aCube);
+
+
+
+		Ogre::Vector3 p4(-100.0f,100.0f,0.0f);
+		Ogre::Vector3 p2(100.0f,100.0f,0.0f);
+		Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
+		OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p4,p2,p3);
+		ObjectList.push_back(aPlane);
+
+
+
+
+
+
+}
+
 void Renderer::CreateFrameListener()
 //Creation de l'input listener et passage en parametre de l'ensemble des joueurs
 {
