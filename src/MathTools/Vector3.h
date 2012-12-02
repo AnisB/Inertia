@@ -30,7 +30,7 @@
 
 class Vector3
 {
-private :
+public :
 
 	double x,y,z;
 

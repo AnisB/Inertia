@@ -26,7 +26,12 @@
 #include "Renderer.h"
 #include "OGRE/Ogre.h"
 
+#if (OGRE_PLATFORM == OGRE_PLATFORM_APPLE) && __LP64__
+#include "OgreEventCatcher.h"
+#include "MyApplication.h"
+#endif
 
+  template<> Renderer* Singleton<Renderer>::mySingleton = 0;
 
 #include <iostream>
 using namespace std;
@@ -47,9 +52,10 @@ void Renderer::Start()
 {
 
 	myLogManager = new  Ogre::LogManager();
-	myLogManager->createLog("Ogre.log" , true, false, true);
+	myLogManager->createLog(resourcesPath+"Ogre.log" , true, false, true);
+
 	mPhysicsWorld = new Inertia::InternalPhysics();
-	mRoot = new Ogre::Root("plugins.cfg", "ogre.cfg", "Ogre.log");
+	mRoot = new Ogre::Root(resourcesPath+"plugins.cfg", resourcesPath+"ogre.cfg", resourcesPath+"Ogre.log");
 
 		//CHARGEMENT CONFIG & RESSOURCES
 			InitMaterials();
@@ -57,6 +63,7 @@ void Renderer::Start()
 			{
 				return ;
 			}
+
 		//Creation de la scene principale
 		mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Fenetre Principale");
 
@@ -66,7 +73,7 @@ void Renderer::Start()
 
 
 		//CREATION DE LA SCENE
-		Scene4();
+		Scene1();
 
 		//Creation de l'input listener
 		CreateFrameListener();
@@ -75,8 +82,28 @@ void Renderer::Start()
 		//----------------------------------------Phase moteur
 
 		//DEBUT DE LA BOUCLE DE RENDU
-		mRoot->startRendering();
-
+		double timeSinceLastFrame = 0;
+		double startTime = 0;
+    
+#if  !((OGRE_PLATFORM == OGRE_PLATFORM_APPLE) && __LP64__)
+		while(InputListener::getSingletonPtr()->viewerIsRunning()) 
+		{
+		    Ogre::WindowEventUtilities::messagePump();
+		    startTime = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU();
+		    InputListener::getSingletonPtr()->getKeyBoard()->capture();
+		    InputListener::getSingletonPtr()->getMouse()->capture();
+		    InputListener::getSingletonPtr()->updateViewer(timeSinceLastFrame);
+		    myRoot->renderOneFrame();
+		    timeSinceLastFrame = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU() - startTime;
+		}
+#else
+        	
+		NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+		myOgreEventCatcher = [[OgreEventCatcher alloc] init];
+		[myOgreEventCatcher startRendering];
+		int retVal = MyApplicationMain(0,NULL);
+		[pool release];
+#endif	
 
 		//-------------------------------------Phase destruction
 
@@ -89,7 +116,7 @@ void Renderer::InitMaterials()
 {
 	//Chargement des matériaux , des meshs et de tout ce qu'on a comme ressource
 	Ogre::ConfigFile cf;
-	cf.load("resources.cfg");
+	cf.load(resourcesPath+"resources.cfg");
 	Ogre::ConfigFile::SectionIterator sectionIter = cf.getSectionIterator();
 
 				Ogre::String sectionName, typeName, dataName;
@@ -327,17 +354,6 @@ void Renderer::Scene3()
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 void Renderer::Scene4()
 {
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
@@ -391,7 +407,7 @@ void Renderer::Scene4()
 void Renderer::CreateFrameListener()
 //Creation de l'input listener et passage en parametre de l'ensemble des joueurs
 {
-	mInputManager= new InputListener(mWindow,this,mCamera);
+	mInputManager= new InputListener(mWindow,this,mCamera,mSceneMgr);
         mRoot->addFrameListener(mInputManager);
 }
 
@@ -399,7 +415,7 @@ void Renderer::CreateFrameListener()
 
 void  Renderer::Update(double dt)
 {
-	mPhysicsWorld->Step(dt*0.001);
+	mPhysicsWorld->Step(dt*0.0001);
 
 	for(std::list<OgreObject * >::iterator them= ObjectList.begin();them!=ObjectList.end();them++)
 	{
