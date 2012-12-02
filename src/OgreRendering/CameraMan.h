@@ -1,10 +1,10 @@
 /**
-  * This file belongs to the Inertia project
-  *
-  * @see https://github.com/AnisB/Inertia
-  * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
-  * @see The GNU Public License (GPL)
-  */
+ * This file belongs to the Inertia project
+ *
+ * @see https://github.com/AnisB/Inertia
+ * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
+ * @see The GNU Public License (GPL)
+ */
 
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -22,19 +22,16 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 #pragma once
 
 /**
 * @file CameraMan.h
 * @author Anis Benyoub (\c anis.benyoub@insa-lyon.fr )
-* Liris CNRS
 *
 * @date 2012/06/10
 *
 * Header file for module CameraMan.cpp
 *
-* This file is part of the DGtal library.
 */
 
 

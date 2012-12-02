@@ -1,41 +1,39 @@
 /**
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*
-**/
+ * This file belongs to the Inertia project
+ *
+ * @see https://github.com/AnisB/Inertia
+ * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
+ * @see The GNU Public License (GPL)
+ */
+
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 
 #pragma once
 
-/**
-* @file DGtalNode.h
-* @author Anis Benyoub (\c anis.benyoub@insa-lyon.fr )
-* INSTITUTION
-*
-* @date 2012/06/14
-*
-* Header file for module DGtalNode.cpp
-*
-* This file is part of the DGtal library.
-*/
-#if defined(DGtalSingleton_RECURSES)
-#error Recursive header files inclusion detected in DGtalSingleton.h
-#else // defined(DGtalSingleton_RECURSES)
+#if defined(Singleton_RECURSES)
+#error Recursive header files inclusion detected in Singleton.h
+#else // defined(Singleton_RECURSES)
 /** Prevents recursive inclusion of headers. */
-#define DGtalSingleton_RECURSES
+#define Singleton_RECURSES
 
-#if !defined DGtalSingleton_h
+#if !defined Singleton_h
 /** Prevents repeated inclusion of headers. */
-#define DGtalSingleton_h
+#define Singleton_h
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -122,9 +120,9 @@
 // //
 ///////////////////////////////////////////////////////////////////////////////
 
-#endif // !defined DGtalSingleton_h
-#undef DGtalSingleton_RECURSES
-#endif // else defined(DGtalSingleton_RECURSES)
+#endif // !defined Singleton_h
+#undef Singleton_RECURSES
+#endif // else defined(Singleton_RECURSES)
 
 
 

@@ -1,10 +1,10 @@
 /**
-  * This file belongs to the Inertia project
-  *
-  * @see https://github.com/AnisB/Inertia
-  * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
-  * @see The GNU Public License (GPL)
-  */
+ * This file belongs to the Inertia project
+ *
+ * @see https://github.com/AnisB/Inertia
+ * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
+ * @see The GNU Public License (GPL)
+ */
 
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 
 
 
