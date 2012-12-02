@@ -35,7 +35,7 @@
 #include "OgreObjects/OgreCube.h"
 #include "Singleton.h"
 
-const std::string resourcesPath="/Users/anisbenyoub/Documents/Developpement/Inertia/CMake/Resources/";
+const std::string resourcesPath="/home/anisbenyoub/Developpment/InertiaGit/CMake/Resources/";
 
 
 class InputListener;

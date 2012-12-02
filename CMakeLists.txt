@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 project(Inertia)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
-message(STATUS "${CMAKE_MODULE_PATH}")
+
 
 
   if(UNIX AND NOT APPLE)
@@ -15,8 +15,13 @@ message(STATUS "${CMAKE_MODULE_PATH}")
       elseif(EXISTS "/usr/lib/OGRE/") #Old ubuntu install
         set(OGRE_PLUGINS "/usr/lib/OGRE/")
       elseif (EXISTS "/usr/lib/i386-linux-gnu/OGRE/") #Ubuntu12.04-32bits-default
+	message(STATUS "Found plugins")
         set(OGRE_PLUGINS "/usr/lib/i386-linux-gnu/OGRE/")
+      elseif (EXISTS "/usr/lib/i386-linux-gnu/OGRE-1.7.4/") #Ubuntu12.04-32bits-default
+	message(STATUS "Found plugins")
+        set(OGRE_PLUGINS "/usr/lib/i386-linux-gnu/OGRE-1.7.4/")
       elseif (EXISTS "/usr/lib/x86_64-linux-gnu/OGRE-1.7.4/") #Ubuntu12.04-64bits-default
+	message(STATUS "Found plugins")
         set(OGRE_PLUGINS  "/usr/lib/x86_64-linux-gnu/OGRE-1.7.4/")
       else()
         message(SEND_ERROR "Unable to find Ogre plugins, please set OGRE_PLUGINS variable")
@@ -30,7 +35,7 @@ message(STATUS "${CMAKE_MODULE_PATH}")
     else ()
       message(SEND_ERROR "Failed to find module path, please set OGRE_DIR variable to the folder containing FindOgre.cmake")
     endif(EXISTS "/usr/local/lib/OGRE/cmake")
-    set(PATH " ")
+    set(PATH ${CMAKE_SOURCE_DIR}/CMake/Resources)
 configure_file(${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h.in  ${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h )
 
   endif(UNIX AND NOT APPLE)
@@ -132,13 +137,6 @@ else()
 endif()
 
 
-
-
-
-
-message(STATUS "Configuring the ogre files")
-    configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/info.plist.in
-      ${PROJECT_BINARY_DIR}/Inertia.app/Contents/info.plist)
 #configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/ogre.cfg.in  ${PROJECT_BINARY_DIR}/Inertia.app/Contents/ogre.cfg )
 #configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/plugins.cfg.in  ${PROJECT_BINARY_DIR}/Inertia.app/Contents/plugins.cfg )  
 #configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/resources.cfg.in  ${PROJECT_BINARY_DIR}/Inertia.app/Contents/resources.cfg )
