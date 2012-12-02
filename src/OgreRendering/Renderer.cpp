@@ -71,7 +71,6 @@ void Renderer::Start()
 		mWindow = mRoot->initialise(true, "Inertia");
 
 
-
 		//CREATION DE LA SCENE
 		Scene1();
 
@@ -88,12 +87,14 @@ void Renderer::Start()
 #if  !((OGRE_PLATFORM == OGRE_PLATFORM_APPLE) && __LP64__)
 		while(InputListener::getSingletonPtr()->viewerIsRunning()) 
 		{
+
 		    Ogre::WindowEventUtilities::messagePump();
 		    startTime = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU();
+
 		    InputListener::getSingletonPtr()->getKeyBoard()->capture();
 		    InputListener::getSingletonPtr()->getMouse()->capture();
-		    InputListener::getSingletonPtr()->updateViewer(timeSinceLastFrame);
-		    myRoot->renderOneFrame();
+		    Update(timeSinceLastFrame);
+		    mRoot->renderOneFrame();
 		    timeSinceLastFrame = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU() - startTime;
 		}
 #else

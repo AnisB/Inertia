@@ -30,6 +30,5 @@
 using namespace std;
 int main()
 {
-    cout<<"Launching"<<endl;
   new Renderer();
 }

@@ -6,7 +6,7 @@ project(Inertia)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
 
 
-
+#Locating ogre Linux
   if(UNIX AND NOT APPLE)
 
     if(NOT DEFINED OGRE_PLUGINS)
@@ -35,12 +35,10 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
     else ()
       message(SEND_ERROR "Failed to find module path, please set OGRE_DIR variable to the folder containing FindOgre.cmake")
     endif(EXISTS "/usr/local/lib/OGRE/cmake")
-    set(PATH ${CMAKE_SOURCE_DIR}/CMake/Resources)
-configure_file(${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h.in  ${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h )
-
+    
   endif(UNIX AND NOT APPLE)
 
-
+#Locating ogre mac
 if(APPLE)
     FIND_LIBRARY(CARBON_LIBRARY Carbon)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
@@ -61,11 +59,12 @@ if(APPLE)
       set(OGRE_PLUGINS "${OGRE_HOME}/lib/")
     endif()
     set(OGRE_DIR "${OGRE_HOME}" )
-    set(PATH ${CMAKE_SOURCE_DIR}/CMake/Resources)
-configure_file(${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h.in  ${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h )
     ADD_DEFINITIONS("-x objective-c++")
-
   endif(APPLE)
+
+set(PATH ${CMAKE_SOURCE_DIR}/CMake/Resources)
+configure_file(${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h.in  ${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h )
+
 
   find_package(OGRE REQUIRED)
   if(OGRE_FOUND)
@@ -82,8 +81,7 @@ configure_file(${CMAKE_SOURCE_DIR}/src/OgreRendering/Renderer.h.in  ${CMAKE_SOUR
     message(FATAL_ERROR  "Ogre not found.  Check the cmake variables associated to this package or disable it." )
   endif ( OGRE_FOUND )
 
-message(STATUS "Looking for OIS")
- 
+
 message(STATUS "Looking for boost")
 set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -124,7 +122,7 @@ if(APPLE)
     file(MAKE_DIRECTORY ${PATH}/Inertia.app/Contents)
     file(MAKE_DIRECTORY ${PATH}/Inertia.app/Contents/MacOS)
     file(MAKE_DIRECTORY ${PATH}/Inertia.app/Contents/Frameworks)
-    execute_process( COMMAND ${CMAKE_COMMAND}  -E create_symlink /Applications/OgreSDK/lib/release/Ogre.framework/ ${PROJECT_BINARY_DIR}/Inertia.app/Contents/Frameworks/Ogre.framework )
+    execute_process( COMMAND ${CMAKE_COMMAND}  -E create_symlink ${OGRE_DIR}/lib/release/Ogre.framework/ ${PROJECT_BINARY_DIR}/Inertia.app/Contents/Frameworks/Ogre.framework )
     configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/info.plist.in
       ${PROJECT_BINARY_DIR}/Inertia.app/Contents/info.plist)
     set(EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/Inertia.app/Contents/MacOS )
@@ -137,8 +135,6 @@ else()
 endif()
 
 
-#configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/ogre.cfg.in  ${PROJECT_BINARY_DIR}/Inertia.app/Contents/ogre.cfg )
-#configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/plugins.cfg.in  ${PROJECT_BINARY_DIR}/Inertia.app/Contents/plugins.cfg )  
-#configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/resources.cfg.in  ${PROJECT_BINARY_DIR}/Inertia.app/Contents/resources.cfg )
+configure_file(${CMAKE_SOURCE_DIR}/CMake/Resources/plugins.cfg.in  ${CMAKE_SOURCE_DIR}/CMake/Resources/plugins.cfg )  
 
 
