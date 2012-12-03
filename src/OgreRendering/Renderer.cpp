@@ -1,10 +1,10 @@
 /**
-  * This file belongs to the Inertia project
-  *
-  * @see https://github.com/AnisB/Inertia
-  * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
-  * @see The GNU Public License (GPL)
-  */
+ * This file belongs to the Inertia project
+ *
+ * @see https://github.com/AnisB/Inertia
+ * @author 2012-2013 Anis Benyoub <benyoub.anis@gmail.com>
+ * @see The GNU Public License (GPL)
+ */
 
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -31,203 +31,208 @@
 #include "MyApplication.h"
 #endif
 
-  template<> Renderer* Singleton<Renderer>::mySingleton = 0;
+template<> Renderer* Singleton<Renderer>::mySingleton = 0;
 
 #include <iostream>
 using namespace std;
 
 Renderer::Renderer()
 {
-		Start();
+		
 }
 
 
 Renderer::~Renderer()
 {
-
+    mRoot->destroySceneManager(mSceneMgr);
+    delete mRoot;
 }
 
 
-void Renderer::Start()
+void Renderer::initiate()
 {
 
-	myLogManager = new  Ogre::LogManager();
-	myLogManager->createLog(resourcesPath+"Ogre.log" , true, false, true);
+    myLogManager = new  Ogre::LogManager();
+    myLogManager->createLog(resourcesPath+"Ogre.log" , true, false, true);
 
-	mPhysicsWorld = new Inertia::InternalPhysics();
-	mRoot = new Ogre::Root(resourcesPath+"plugins.cfg", resourcesPath+"ogre.cfg", resourcesPath+"Ogre.log");
+    mPhysicsWorld = new Inertia::InternalPhysics();
+    mRoot = new Ogre::Root(resourcesPath+"plugins.cfg", resourcesPath+"ogre.cfg", resourcesPath+"Ogre.log");
 
-		//CHARGEMENT CONFIG & RESSOURCES
-			InitMaterials();
-			if (!InitConfigs())
-			{
-				return ;
-			}
+    //CHARGEMENT CONFIG & RESSOURCES
+    InitMaterials();
+    if (!InitConfigs())
+    {
+	return ;
+    }
 
-		//Creation de la scene principale
-		mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Fenetre Principale");
+    //Creation de la scene principale
+    mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Fenetre Principale");
 
-		//DEVICES
-		mWindow = mRoot->initialise(true, "Inertia");
-
-
-		//CREATION DE LA SCENE
-		Scene1();
-
-		//Creation de l'input listener
-		CreateFrameListener();
+    //DEVICES
+    mWindow = mRoot->initialise(true, "Inertia");
 
 
-		//----------------------------------------Phase moteur
+    preScene();
 
-		//DEBUT DE LA BOUCLE DE RENDU
-		double timeSinceLastFrame = 0;
-		double startTime = 0;
+
+}
+
+void Renderer::render()
+{
+
+    //DEBUT DE LA BOUCLE DE RENDU
+    double timeSinceLastFrame = 0;
+    double startTime = 0;
     
 #if  !((OGRE_PLATFORM == OGRE_PLATFORM_APPLE) && __LP64__)
-		while(InputListener::getSingletonPtr()->viewerIsRunning()) 
-		{
+    while(InputListener::getSingletonPtr()->viewerIsRunning()) 
+    {
 
-		    Ogre::WindowEventUtilities::messagePump();
-		    startTime = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU();
+	Ogre::WindowEventUtilities::messagePump();
+	startTime = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU();
 
-		    InputListener::getSingletonPtr()->getKeyBoard()->capture();
-		    InputListener::getSingletonPtr()->getMouse()->capture();
-		    Update(timeSinceLastFrame);
-		    mRoot->renderOneFrame();
-		    timeSinceLastFrame = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU() - startTime;
-		}
+	InputListener::getSingletonPtr()->getKeyBoard()->capture();
+	InputListener::getSingletonPtr()->getMouse()->capture();
+	Update(timeSinceLastFrame);
+	mRoot->renderOneFrame();
+	timeSinceLastFrame = InputListener::getSingletonPtr()->getTimer()->getMillisecondsCPU() - startTime;
+    }
 #else
         	
-		NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-		myOgreEventCatcher = [[OgreEventCatcher alloc] init];
-		[myOgreEventCatcher startRendering];
-		int retVal = MyApplicationMain(0,NULL);
-		[pool release];
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    myOgreEventCatcher = [[OgreEventCatcher alloc] init];
+    [myOgreEventCatcher startRendering];
+    int retVal = MyApplicationMain(0,NULL);
+    [pool release];
 #endif	
 
-		//-------------------------------------Phase destruction
+    //-------------------------------------Phase destruction
 
-		mRoot->destroySceneManager(mSceneMgr);
-		delete mRoot;
+
 
 }
 
 void Renderer::InitMaterials()
 {
-	//Chargement des matériaux , des meshs et de tout ce qu'on a comme ressource
-	Ogre::ConfigFile cf;
-	cf.load(resourcesPath+"resources.cfg");
-	Ogre::ConfigFile::SectionIterator sectionIter = cf.getSectionIterator();
+    //Chargement des matériaux , des meshs et de tout ce qu'on a comme ressource
+    Ogre::ConfigFile cf;
+    cf.load(resourcesPath+"resources.cfg");
+    Ogre::ConfigFile::SectionIterator sectionIter = cf.getSectionIterator();
 
-				Ogre::String sectionName, typeName, dataName;
-				Ogre::ConfigFile::SettingsMultiMap * settings;
-				Ogre::ConfigFile::SettingsMultiMap::iterator i;
-				while (sectionIter.hasMoreElements())
-				{
-					sectionName = sectionIter.peekNextKey();
-					settings = sectionIter.getNext();
+    Ogre::String sectionName, typeName, dataName;
+    Ogre::ConfigFile::SettingsMultiMap * settings;
+    Ogre::ConfigFile::SettingsMultiMap::iterator i;
+    while (sectionIter.hasMoreElements())
+    {
+	sectionName = sectionIter.peekNextKey();
+	settings = sectionIter.getNext();
 
-					for (i = settings->begin(); i != settings->end(); ++i)
-					{
-						typeName = i->first;
-						dataName = i->second;
+	for (i = settings->begin(); i != settings->end(); ++i)
+	{
+	    typeName = i->first;
+	    dataName = i->second;
 
-						Ogre::ResourceGroupManager::getSingleton().addResourceLocation(dataName, typeName, sectionName);
-					}
-				}
+	    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(dataName, typeName, sectionName);
+	}
+    }
 
-				Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-	//fin chargement materials
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+    //fin chargement materials
 }
 
 bool Renderer::InitConfigs()
 {
-	if(!mRoot->restoreConfig())
+    if(!mRoot->restoreConfig())
+    {
+	if(!mRoot->showConfigDialog())
 	{
-		if(!mRoot->showConfigDialog())
-		{
-			return false; //erreur de chargement config
-		}
+	    return false; //erreur de chargement config
 	}
-	return true;
+    }
+    return true;
 }
 
+void Renderer::preScene()
+{
+
+
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.4, 0.4, 0.4));
+
+
+    Ogre::Light * light = mSceneMgr->createLight("Light");
+    light->setType(Ogre::Light::LT_POINT);
+    light->setDirection(Ogre::Vector3(1, -1, 0));
+    light->setDiffuseColour(0.8, 0.8, 0.8);
+    light->setSpecularColour(0.8, 0.5, 0.8);
+    light->setPosition(100, 250, 100);
+
+    //Camera
+    mCamera = mSceneMgr->createCamera("PlayerCamera");
+
+
+    //Screens
+    Ogre::Viewport* vp = mWindow->addViewport(mCamera);
+    vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
+
+
+    // Parametrage du point de vue
+    mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+
+    mInputManager= new InputListener(mWindow,this,mCamera,mSceneMgr);
+    mRoot->addFrameListener(mInputManager);
+
+}
 
 void Renderer::Scene1()
 {
 
-	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 
-		mSceneMgr->setAmbientLight(Ogre::ColourValue(0.4, 0.4, 0.4));
+    Ogre::Vector3 pos1(50.0f,50.0f,50.0f);
+    mSphere  = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos1);
+    ObjectList.push_back(mSphere);
+    mSphere->SetGravity();
+
+    Ogre::Vector3 pos2(0.0f,0.0f,100.0f);
+    OgreSphere * aSphere2 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos2);
+    aSphere2->SetGravity();
+    ObjectList.push_back(aSphere2);
+
+    Ogre::Vector3 pos3(0.0f,50.0f,200.0f);
+    OgreSphere * aSphere3 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos3);
+    aSphere3->SetGravity();
+    ObjectList.push_back(aSphere3);
+
+    Ogre::Vector3 pos4(50.0f,0.0f,300.0f);
+    OgreSphere * aSphere4 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos4);
+    aSphere4->SetGravity();
+    ObjectList.push_back(aSphere4);
+
+    Ogre::Vector3 pos5(80.0f,-80.0f,100.0f);
+    OgreSphere * aSphere5= new OgreSphere(mPhysicsWorld ,mSceneMgr,pos5);
+    aSphere5->SetGravity();
+    ObjectList.push_back(aSphere5);
+
+    Ogre::Vector3 pos6(40.0f,-80.0f,150.0f);
+    OgreSphere * aSphere6= new OgreSphere(mPhysicsWorld ,mSceneMgr,pos6);
+    aSphere6->SetGravity();
+    ObjectList.push_back(aSphere6);
+
+    Ogre::Vector3 pos7(80.0f,-840.0f,200.0f);
+    OgreSphere * aSphere7= new OgreSphere(mPhysicsWorld ,mSceneMgr,pos7);
+    aSphere7->SetGravity();
+    ObjectList.push_back(aSphere7);
 
 
-		 Ogre::Light * light = mSceneMgr->createLight("Light");
-		 light->setType(Ogre::Light::LT_POINT);
-		 light->setDirection(Ogre::Vector3(1, -1, 0));
-		 light->setDiffuseColour(0.8, 0.8, 0.8);
-		 light->setSpecularColour(0.8, 0.5, 0.8);
-		 light->setPosition(100, 250, 100);
-
-		//Camera
-		mCamera = mSceneMgr->createCamera("PlayerCamera");
-
-
-		//Screens
-		Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-		vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-
-
-		// Parametrage du point de vue
-		mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
-
-
-
-
-		Ogre::Vector3 pos1(50.0f,50.0f,50.0f);
-		mSphere  = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos1);
-		ObjectList.push_back(mSphere);
-		mSphere->SetGravity();
-
-		Ogre::Vector3 pos2(0.0f,0.0f,100.0f);
-		OgreSphere * aSphere2 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos2);
-		aSphere2->SetGravity();
-		ObjectList.push_back(aSphere2);
-
-		Ogre::Vector3 pos3(0.0f,50.0f,200.0f);
-		OgreSphere * aSphere3 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos3);
-		aSphere3->SetGravity();
-		ObjectList.push_back(aSphere3);
-
-		Ogre::Vector3 pos4(50.0f,0.0f,300.0f);
-		OgreSphere * aSphere4 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos4);
-		aSphere4->SetGravity();
-		ObjectList.push_back(aSphere4);
-
-		Ogre::Vector3 pos5(80.0f,-80.0f,100.0f);
-		OgreSphere * aSphere5= new OgreSphere(mPhysicsWorld ,mSceneMgr,pos5);
-		aSphere5->SetGravity();
-		ObjectList.push_back(aSphere5);
-
-		Ogre::Vector3 pos6(40.0f,-80.0f,150.0f);
-		OgreSphere * aSphere6= new OgreSphere(mPhysicsWorld ,mSceneMgr,pos6);
-		aSphere6->SetGravity();
-		ObjectList.push_back(aSphere6);
-
-		Ogre::Vector3 pos7(80.0f,-840.0f,200.0f);
-		OgreSphere * aSphere7= new OgreSphere(mPhysicsWorld ,mSceneMgr,pos7);
-		aSphere7->SetGravity();
-		ObjectList.push_back(aSphere7);
-
-
-		Ogre::Vector3 p1(-100.0f,100.0f,0.0f);
-		Ogre::Vector3 p2(100.0f,100.0f,0.0f);
-		Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
-		OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p1,p2,p3);
-		ObjectList.push_back(aPlane);
-
+    Ogre::Vector3 p1(-100.0f,100.0f,0.0f);
+    Ogre::Vector3 p2(100.0f,100.0f,0.0f);
+    Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
+    OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p1,p2,p3);
+    ObjectList.push_back(aPlane);
 
 
 
@@ -239,199 +244,105 @@ void Renderer::Scene1()
 
 void Renderer::Scene2()
 {
-	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
+    Ogre::Vector3 pos1(0.0f,0.0f,70.0f);
+    mSphere  = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos1);
+    ObjectList.push_back(mSphere);
+    mSphere->SetGravity();
 
-		mSceneMgr->setAmbientLight(Ogre::ColourValue(0.4, 0.4, 0.4));
+    Ogre::Vector3 pos2(0.0f,0.0f,150.0f);
+    OgreSphere * aSphere = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos2);
+    aSphere->SetGravity();
+    ObjectList.push_back(aSphere);
 
+    Ogre::Vector3 pos3(0.0f,0.0f,200.0f);
+    OgreSphere * aSphere2 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos3);
+    aSphere2->SetGravity();
+    ObjectList.push_back(aSphere2);
 
-		 Ogre::Light * light = mSceneMgr->createLight("Light");
-		 light->setType(Ogre::Light::LT_POINT);
-		 light->setDirection(Ogre::Vector3(1, -1, 0));
-		 light->setDiffuseColour(0.8, 0.8, 0.8);
-		 light->setSpecularColour(0.8, 0.5, 0.8);
-		 light->setPosition(100, 250, 100);
+    Ogre::Vector3 pos4(0.0f,0.0f,250.0f);
+    OgreSphere * aSphere3 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos4);
+    aSphere3->SetGravity();
+    ObjectList.push_back(aSphere3);
 
-		//Camera
-		mCamera = mSceneMgr->createCamera("PlayerCamera");
-
-
-		//Screens
-		Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-		vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-
-		// Parametrage du point de vue
-		mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
-
-
-
-
-		Ogre::Vector3 pos1(0.0f,0.0f,70.0f);
-		mSphere  = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos1);
-		ObjectList.push_back(mSphere);
-		mSphere->SetGravity();
-
-		Ogre::Vector3 pos2(0.0f,0.0f,150.0f);
-		OgreSphere * aSphere = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos2);
-		aSphere->SetGravity();
-		ObjectList.push_back(aSphere);
-
-		Ogre::Vector3 pos3(0.0f,0.0f,200.0f);
-		OgreSphere * aSphere2 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos3);
-		aSphere2->SetGravity();
-		ObjectList.push_back(aSphere2);
-
-		Ogre::Vector3 pos4(0.0f,0.0f,250.0f);
-		OgreSphere * aSphere3 = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos4);
-		aSphere3->SetGravity();
-		ObjectList.push_back(aSphere3);
-
-		Ogre::Vector3 p1(-100.0f,100.0f,0.0f);
-		Ogre::Vector3 p2(100.0f,100.0f,0.0f);
-		Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
-		OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p1,p2,p3);
-		ObjectList.push_back(aPlane);
+    Ogre::Vector3 p1(-100.0f,100.0f,0.0f);
+    Ogre::Vector3 p2(100.0f,100.0f,0.0f);
+    Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
+    OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p1,p2,p3);
+    ObjectList.push_back(aPlane);
 		
-
-
-
-
 
 }
 
 void Renderer::Scene3()
 {
-	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
-
-		mSceneMgr->setAmbientLight(Ogre::ColourValue(0.4, 0.4, 0.4));
-
-
-		 Ogre::Light * light = mSceneMgr->createLight("Light");
-		 light->setType(Ogre::Light::LT_POINT);
-		 light->setDirection(Ogre::Vector3(1, -1, 0));
-		 light->setDiffuseColour(0.8, 0.8, 0.8);
-		 light->setSpecularColour(0.8, 0.5, 0.8);
-		 light->setPosition(100, 250, 100);
-
-		//Camera
-		mCamera = mSceneMgr->createCamera("PlayerCamera");
-
-
-		//Screens
-		Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-		vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-
-		// Parametrage du point de vue
-		mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+ 
+    Ogre::Vector3 pos1(0.0f,0.0f,50.0f);
+    mSphere  = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos1);
+    ObjectList.push_back(mSphere);
+    mSphere->SetGravity();
 
 
 
+    Ogre::Vector3 p1(-100.0f,100.0f,0.0f);
+    Ogre::Vector3 p2(100.0f,100.0f,0.0f);
+    Ogre::Vector3 p3(100.0f,-100.0f,-100.0f);
+    OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p1,p2,p3);
+    ObjectList.push_back(aPlane);
 
-		Ogre::Vector3 pos1(0.0f,0.0f,50.0f);
-		mSphere  = new OgreSphere(mPhysicsWorld ,mSceneMgr,pos1);
-		ObjectList.push_back(mSphere);
-		mSphere->SetGravity();
-
-
-
-		Ogre::Vector3 p1(-100.0f,100.0f,0.0f);
-		Ogre::Vector3 p2(100.0f,100.0f,0.0f);
-		Ogre::Vector3 p3(100.0f,-100.0f,-100.0f);
-		OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p1,p2,p3);
-		ObjectList.push_back(aPlane);
-
-		Ogre::Vector3 p4(-100.0f,2000.0f,-100.0f);
-		Ogre::Vector3 p5(100.0f,2000.0f,-100.0f);
-		Ogre::Vector3 p6(100.0f,-2000.0f,-100.0f);
-		OgrePlane * aPlane2 = new OgrePlane(mPhysicsWorld ,mSceneMgr,p4,p5,p6);
-		ObjectList.push_back(aPlane2);
-
-
-
+    Ogre::Vector3 p4(-100.0f,2000.0f,-100.0f);
+    Ogre::Vector3 p5(100.0f,2000.0f,-100.0f);
+    Ogre::Vector3 p6(100.0f,-2000.0f,-100.0f);
+    OgrePlane * aPlane2 = new OgrePlane(mPhysicsWorld ,mSceneMgr,p4,p5,p6);
+    ObjectList.push_back(aPlane2);
 
 }
 
 
 void Renderer::Scene4()
 {
-	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
-
-		mSceneMgr->setAmbientLight(Ogre::ColourValue(0.4, 0.4, 0.4));
-
-
-		 Ogre::Light * light = mSceneMgr->createLight("Light");
-		 light->setType(Ogre::Light::LT_POINT);
-		 light->setDirection(Ogre::Vector3(1, -1, 0));
-		 light->setDiffuseColour(0.8, 0.8, 0.8);
-		 light->setSpecularColour(0.8, 0.5, 0.8);
-		 light->setPosition(100, 250, 100);
-
-		//Camera
-		mCamera = mSceneMgr->createCamera("PlayerCamera");
-
-
-		//Screens
-		Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-		vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-
-		// Parametrage du point de vue
-		mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+    Ogre::Vector3 p1(-100.0f,100.0f,100.0f);
+    OgreCube * aCube = new OgreCube(mPhysicsWorld ,mSceneMgr,p1);
+    aCube->SetGravity();
+    ObjectList.push_back(aCube);
 
 
 
-
-		Ogre::Vector3 p1(-100.0f,100.0f,100.0f);
-		OgreCube * aCube = new OgreCube(mPhysicsWorld ,mSceneMgr,p1);
-		aCube->SetGravity();
-		ObjectList.push_back(aCube);
-
-
-
-		Ogre::Vector3 p4(-100.0f,100.0f,0.0f);
-		Ogre::Vector3 p2(100.0f,100.0f,0.0f);
-		Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
-		OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p4,p2,p3);
-		ObjectList.push_back(aPlane);
-
-
-
-
-
-
+    Ogre::Vector3 p4(-100.0f,100.0f,0.0f);
+    Ogre::Vector3 p2(100.0f,100.0f,0.0f);
+    Ogre::Vector3 p3(100.0f,-100.0f,0.0f);
+    OgrePlane * aPlane = new OgrePlane(mPhysicsWorld ,mSceneMgr,p4,p2,p3);
+    ObjectList.push_back(aPlane);
 }
 
 void Renderer::CreateFrameListener()
 //Creation de l'input listener et passage en parametre de l'ensemble des joueurs
 {
-	mInputManager= new InputListener(mWindow,this,mCamera,mSceneMgr);
-        mRoot->addFrameListener(mInputManager);
+    mInputManager= new InputListener(mWindow,this,mCamera,mSceneMgr);
+    mRoot->addFrameListener(mInputManager);
 }
 
 
 
 void  Renderer::Update(double dt)
 {
-	mPhysicsWorld->Step(dt*0.0001);
+    mPhysicsWorld->Step(dt*0.0001);
 
-	for(std::list<OgreObject * >::iterator them= ObjectList.begin();them!=ObjectList.end();them++)
-	{
-		(*them)->Update();
-	}
+    for(std::list<OgreObject * >::iterator them= ObjectList.begin();them!=ObjectList.end();them++)
+    {
+	(*them)->Update();
+    }
 
 }
 
 void  Renderer::Step()
 {
-	mPhysicsWorld->Step(0.05);
+    mPhysicsWorld->Step(0.05);
 
-	for(std::list<OgreObject * >::iterator them= ObjectList.begin();them!=ObjectList.end();them++)
-	{
-		(*them)->Update();
-	}
+    for(std::list<OgreObject * >::iterator them= ObjectList.begin();them!=ObjectList.end();them++)
+    {
+	(*them)->Update();
+    }
 
 }

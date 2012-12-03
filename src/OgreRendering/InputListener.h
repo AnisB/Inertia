@@ -22,7 +22,7 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
+#pragma once
 
 #if defined(InputListener_RECURSES)
 #error Recursive header files inclusion detected in InputListener.h
