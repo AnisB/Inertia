@@ -30,9 +30,16 @@
 using namespace std;
 int main()
 {
+		cout<<"Az"<<endl;
+
   new Renderer();
   Renderer & aRenderer =  Renderer::getSingleton();
+    cout<<"Post initiate"<<endl;
+
   aRenderer.initiate();
-  aRenderer.Scene1();
+      cout<<"pre scene"<<endl;
+
+  aRenderer.Scene2();
+  cout<<"Just before render"<<endl;
   aRenderer.render();
 }

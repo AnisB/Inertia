@@ -63,7 +63,9 @@ public:
 	{
 	    return mRoot;
 	}
-    void Start();
+    void initiate();
+    void preScene();
+    void render();
     void InitMaterials();
     bool InitConfigs();
     void Scene1();
